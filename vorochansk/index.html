@@ -1,3 +1,597 @@
-<html><head><title>Идёт стройка!</title></head><body><h1>Идёт стройка! Скоро будет готово!</h1><img src="luklukin.ru/assets
-/Mobile Phone With Arrow.webp"></img>Будущий сайт города Ворочанск
-<br>— Эй Равшан, щё делаеш?? <br> — Будущее строю!</body></html>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ворочанск - Официальный сайт города</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+        }
+
+        header {
+            background: linear-gradient(135deg, #2c5f2d 0%, #97bc62 100%);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 3px 3px 0px rgba(0,0,0,0.3);
+            letter-spacing: 2px;
+        }
+
+        .motto {
+            font-size: 1.5rem;
+            font-style: italic;
+            margin-top: 1rem;
+            opacity: 0.95;
+        }
+
+        nav {
+            background: #2c5f2d;
+            padding: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .nav-container { max-width: 1200px; margin: 0 auto; }
+
+        .nav-group-label {
+            color: #97bc62;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        .nav-group {
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid rgba(151, 188, 98, 0.2);
+        }
+
+        .nav-group:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 0.75rem 1.5rem;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            display: inline-block;
+            font-size: 0.95rem;
+        }
+
+        nav a:hover { color: #97bc62; background: rgba(151, 188, 98, 0.15); }
+        nav a.external::after { content: ' ↗'; font-size: 0.75rem; opacity: 0.7; }
+        nav a.highlight { background: rgba(151, 188, 98, 0.25); border: 1px solid rgba(151, 188, 98, 0.4); }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+
+        section {
+            background: white;
+            margin: 2rem 0;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            color: #2c5f2d;
+            margin-bottom: 1.5rem;
+            font-size: 2rem;
+            border-bottom: 3px solid #97bc62;
+            padding-bottom: 0.5rem;
+        }
+
+        /* ===== PANORAMA ===== */
+        .panorama-wrap {
+            width: 100%;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            position: relative;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .panorama-wrap img {
+            width: 100%;
+            height: auto;
+            display: block;
+            object-fit: cover;
+        }
+
+        .panorama-wrap .placeholder-text {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 1.4rem;
+            text-align: center;
+            pointer-events: none;
+            text-shadow: 1px 1px 4px rgba(0,0,0,0.5);
+        }
+
+        /* ===== GALLERY ===== */
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+            background: #e0e0e0;
+            min-height: 250px;
+        }
+
+        .gallery-item:hover { transform: translateY(-5px); }
+
+        .gallery-item img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .gallery-item .caption {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 1rem;
+            font-weight: 600;
+        }
+
+        .gallery-item .img-placeholder {
+            width: 100%;
+            height: 250px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #888;
+            font-size: 1rem;
+            text-align: center;
+            padding: 1rem;
+        }
+
+        /* ===== ATTRACTIONS ===== */
+        .attractions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 1.5rem;
+        }
+
+        .attraction-card {
+            background: #f9f9f9;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid #97bc62;
+            transition: all 0.3s;
+        }
+
+        .attraction-card:hover { background: #f0f0f0; transform: translateX(5px); }
+        .attraction-card h3 { color: #2c5f2d; margin-bottom: 0.5rem; }
+
+        /* ===== TRANSPORT ===== */
+        .transport-status { display: grid; gap: 1rem; margin-top: 1.5rem; }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            background: #f9f9f9;
+            border-radius: 8px;
+            border-left: 4px solid;
+        }
+
+        .status-item.working { border-left-color: #4caf50; }
+        .status-item.closed { border-left-color: #f44336; }
+        .status-item.overloaded { border-left-color: #ff9800; }
+
+        .status-indicator {
+            width: 12px; height: 12px;
+            border-radius: 50%;
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+
+        .status-item.working .status-indicator { background: #4caf50; animation: pulse 2s infinite; }
+        .status-item.closed .status-indicator { background: #f44336; animation: blink 1s infinite; }
+        .status-item.overloaded .status-indicator { background: #ff9800; animation: blink 1.5s infinite; }
+
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+        /* ===== MAPS ===== */
+        .maps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .map-card {
+            background: #f9f9f9;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+            position: relative;
+            min-height: 300px;
+        }
+
+        .map-card:hover { transform: translateY(-3px); }
+
+        .map-card img {
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .map-card .map-label {
+            padding: 1rem;
+            text-align: center;
+            font-weight: 700;
+            color: #2c5f2d;
+            background: white;
+        }
+
+        .map-card .img-placeholder {
+            width: 100%;
+            height: 280px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #888;
+            font-size: 1rem;
+            text-align: center;
+            padding: 1rem;
+            background: #e8e8e8;
+            border: 2px dashed #ccc;
+        }
+
+        /* ===== SOCIAL ===== */
+        .social-links { display: flex; gap: 1.5rem; flex-wrap: wrap; margin-top: 1.5rem; }
+
+        .social-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: #2c5f2d;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .social-link:hover { background: #97bc62; transform: translateY(-2px); }
+
+        footer {
+            background: #2c5f2d;
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+        }
+
+        .update-time {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            padding: 0.75rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        /* ===== IMAGE EDIT HINT ===== */
+        .img-edit-hint {
+            background: #fff8e1;
+            border: 1px solid #ffe082;
+            border-radius: 8px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            color: #6d5a00;
+        }
+
+        .img-edit-hint code {
+            background: #fff3cd;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 768px) {
+            header h1 { font-size: 2rem; }
+            .motto { font-size: 1.2rem; }
+            nav ul { gap: 0.5rem 0.75rem; }
+            nav a { font-size: 0.85rem; padding: 0.35rem 0.6rem; }
+            .panorama-wrap { min-height: 200px; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🏙️ Ворочанск</h1>
+        <p class="motto">«Терпение и труд<br>Будущее построят!»</p>
+    </header>
+
+    <nav>
+        <div class="nav-container">
+            <div class="nav-group">
+                <div class="nav-group-label">Навигация по городу</div>
+                <ul>
+                    <li><a href="#gallery">📸 Галерея</a></li>
+                    <li><a href="#attractions">🏛️ Достопримечательности</a></li>
+                    <li><a href="#transport">🚇 Транспорт</a></li>
+                    <li><a href="#maps">🗺️ Карты и схемы</a></li>
+                    <li><a href="#contacts">📱 Контакты</a></li>
+                </ul>
+            </div>
+            <div class="nav-group">
+                <div class="nav-group-label">Разделы проекта</div>
+                <ul>
+                    <li><a href="https://www.maxmine.bond" class="external highlight">🌐 Главный сайт MaxMine</a></li>
+                    <li><a href="/roads-buses">🚌 Автомобильные дороги и Автобусы</a></li>
+                    <li><a href="/air-sea">✈️ Воздушный и Морской Транспорт</a></li>
+                    <li><a href="/rules-tariffs">📋 Правила и Тарифы</a></li>
+                    <li><a href="/tourists">🎒 Для туристов</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+
+        <!-- ==================== ГАЛЕРЕЯ ==================== -->
+        <section id="gallery">
+            <h2>📸 Панорама города</h2>
+
+            <!-- <div class="img-edit-hint">
+                💡 Чтобы вставить изображение, замените значение <code>src</code> у тега <code>&lt;img&gt;</code> на ссылку на ваше изображение.
+            </div> -->
+
+            <!-- ===== ПАНОРАМА ===== -->
+            <!-- Вставьте ссылку на панорамное изображение в src ниже -->
+            <div class="panorama-wrap">
+                <img src="https://www.luklukin.ru/icons/yt.png" alt="Панорама города Ворочанск"> <!-- onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" -->
+                </div>
+            </div>
+
+            <!-- ===== ГАЛЕРЕЯ ===== -->
+            <div class="gallery">
+
+                <!-- Изображение 1: Центральная площадь -->
+                <div class="gallery-item">
+                    <img src="https://www.luklukin.ru/icons/tg.png" alt="Центральная площадь Ворочанска"
+>
+
+                    <div class="caption">Центральная площадь</div>
+                </div>
+
+                <!-- Изображение 2: Речной район -->
+                <div class="gallery-item">
+                    <img src="https://www.luklukin.ru/icons/tg.png" alt="Речной район Ворочанска"
+>
+
+                    <div class="caption">Речной район</div>
+                </div>
+
+                <!-- Изображение 3: Деловой центр -->
+                <div class="gallery-item">
+                    <img src="https://www.luklukin.ru/icons/tg.png" alt="Деловой центр Ворочанска"
+>
+
+                    <div class="caption">Деловой центр</div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ==================== ДОСТОПРИМЕЧАТЕЛЬНОСТИ ==================== -->
+        <section id="attractions">
+            <h2>🏛️ Главные достопримечательности</h2>
+            <div class="attractions">
+                <div class="attraction-card">
+                    <h3>🏢 Ратуша Ворочанска</h3>
+                    <p>Главное административное здание города, построенное из кварцевых блоков и каменных кирпичей. Символ городской власти.</p>
+                </div>
+                <div class="attraction-card">
+                    <h3>🌳 Центральный парк</h3>
+                    <p>Просторный парк с фонтанами, пешеходными дорожками и зонами отдыха. Идеальное место для прогулок.</p>
+                </div>
+                <div class="attraction-card">
+                    <h3>🚉 Центральный вокзал</h3>
+                    <p>Главный транспортный узел города. Отсюда отправляются пригородные электрички во все направления.</p>
+                </div>
+                <div class="attraction-card">
+                    <h3>🏗️ Башня Ворочающегося</h3>
+                    <p>Самое высокое здание города. Со смотровой площадки открывается великолепный вид на весь Ворочанск.</p>
+                </div>
+                <div class="attraction-card">
+                    <h3>🎭 Театральная площадь</h3>
+                    <p>Культурный центр города с театром, концертным залом и регулярными городскими мероприятиями.</p>
+                </div>
+                <div class="attraction-card">
+                    <h3>🏛️ Городской музей</h3>
+                    <p>Музей истории города, где хранятся артефакты с момента основания Ворочанска до наших дней.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== ТРАНСПОРТ ==================== -->
+        <section id="transport">
+            <h2>🚇 Оперативная сводка транспорта</h2>
+            <div class="update-time">
+                ⏰ Обновлено: 16 сентября 2026, 08:30
+            </div>
+
+            <div class="transport-status">
+                <div class="status-item working">
+                    <div class="status-indicator"></div>
+                    <div><strong>Линия метро 1 (Красная)</strong> — Стабильно, поезда ходят по графику</div>
+                </div>
+                <div class="status-item working">
+                    <div class="status-indicator"></div>
+                    <div><strong>Линия метро 2 (Синяя)</strong> — Стабильно, интервал 5 минут</div>
+                </div>
+                <div class="status-item closed">
+                    <div class="status-indicator"></div>
+                    <div><strong>Линия метро 3 (Зелёная)</strong> — Закрыта на реконструкцию до 20 сентября</div>
+                </div>
+                <div class="status-item overloaded">
+                    <div class="status-indicator"></div>
+                    <div><strong>Автовокзал Центральный</strong> — Перегружен, ожидайте очереди</div>
+                </div>
+                <div class="status-item working">
+                    <div class="status-indicator"></div>
+                    <div><strong>Трамвай маршрут №5</strong> — Работает в штатном режиме</div>
+                </div>
+                <div class="status-item closed">
+                    <div class="status-indicator"></div>
+                    <div><strong>Автобус маршрут №12</strong> — Временно изменён из-за ремонтных работ</div>
+                </div>
+                <div class="status-item working">
+                    <div class="status-indicator"></div>
+                    <div><strong>Пригородные электрички</strong> — Все направления работают по графику</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== КАРТЫ И СХЕМЫ ==================== -->
+        <section id="maps">
+            <h2>🗺️ Карты и схемы</h2>
+
+            <div class="maps-grid">
+
+                <!-- Карта города -->
+                <div class="map-card">
+                    <img src="https://www.luklukin.ru/icons/dc.png" alt="Карта города Ворочанска"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    
+                    <div class="map-label">🗺️ Карта города</div>
+                </div>
+
+                <!-- Схема метро -->
+                <div class="map-card">
+                    <img src="https://www.luklukin.ru/icons/dc.png" alt="Схема метро Ворочанска"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    
+                    <div class="map-label">🚇 Схема метро</div>
+                </div>
+
+                <!-- Схема автобусов и трамваев -->
+                <div class="map-card">
+                    <img src="https://www.luklukin.ru/icons/dc.png" alt="Схема автобусов и трамваев"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    
+                    <div class="map-label">🚌 Схема автобусов и трамваев</div>
+                </div>
+
+                <!-- Схема пригородных электричек -->
+                <div class="map-card">
+                    <img src="https://www.luklukin.ru/icons/dc.png" alt="Схема пригородных электричек"
+                         >
+                    <!-- <div class="img-placeholder" style="display:none;">🚆 Схема пригородных электричек<br><small>Вставьте ссылку на изображение схемы</small></div> onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"-->
+                    <div class="map-label">🚆 Схема пригородных электричек</div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ==================== КОНТАКТЫ ==================== -->
+        <section id="contacts">
+            <h2>📱 Социальные сети и контакты</h2>
+
+            <h3 style="margin-top: 1.5rem; margin-bottom: 1rem; color: #2c5f2d;">Администрация города:</h3>
+            <div class="social-links">
+                <a href="#" class="social-link"><span>📧</span> Email администрации</a>
+                <a href="#" class="social-link"><span>💬</span> Telegram-канал</a>
+                <a href="#" class="social-link"><span>📱</span> Discord сервер</a>
+                <a href="#" class="social-link"><span>🎮</span> Minecraft сервер</a>
+            </div>
+
+            <h3 style="margin-top: 2rem; margin-bottom: 1rem; color: #2c5f2d;">Городские СМИ:</h3>
+            <div class="social-links">
+                <a href="#" class="social-link"><span>📰</span> Ворочанские Вести</a>
+                <a href="#" class="social-link"><span>📺</span> ТВ Ворочанск</a>
+                <a href="#" class="social-link"><span>📻</span> Радио города</a>
+                <a href="#" class="social-link"><span>🌐</span> Новостной портал</a>
+            </div>
+        </section>
+
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Ворочанск. Все права защищены.</p>
+        <p style="margin-top: 0.5rem; opacity: 0.8;">Официальный сайт города в Minecraft</p>
+    </footer>
+
+    <script>
+        // Плавная прокрутка для внутренних якорей
+        document.querySelectorAll('nav a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // Анимация появления секций
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+        document.querySelectorAll('section').forEach(section => {
+            section.style.opacity = '0';
+            section.style.transform = 'translateY(20px)';
+            section.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(section);
+        });
+    </script>
+</body>
+</html>
