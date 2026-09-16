@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Расписание транспорта - Ворочанск</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+        }
+
+        header {
+            background: linear-gradient(135deg, #2c5f2d 0%, #97bc62 100%);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 3px 3px 0px rgba(0,0,0,0.3);
+            letter-spacing: 2px;
+        }
+
+        .motto {
+            font-size: 1.5rem;
+            font-style: italic;
+            margin-top: 1rem;
+            opacity: 0.95;
+        }
+
+        nav {
+            background: #2c5f2d;
+            padding: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .nav-container { max-width: 1200px; margin: 0 auto; }
+
+        .nav-group-label {
+            color: #97bc62;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        .nav-group {
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid rgba(151, 188, 98, 0.2);
+        }
+
+        .nav-group:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 0.75rem 1.5rem;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            display: inline-block;
+            font-size: 0.95rem;
+        }
+
+        nav a:hover { color: #97bc62; background: rgba(151, 188, 98, 0.15); }
+        nav a.external::after { content: ' ↗'; font-size: 0.75rem; opacity: 0.7; }
+        nav a.highlight { background: rgba(151, 188, 98, 0.25); border: 1px solid rgba(151, 188, 98, 0.4); }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+
+        section {
+            background: white;
+            margin: 2rem 0;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            color: #2c5f2d;
+            margin-bottom: 1.5rem;
+            font-size: 2rem;
+            border-bottom: 3px solid #97bc62;
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            color: #2c5f2d;
+            margin: 1.5rem 0 1rem 0;
+            font-size: 1.5rem;
+        }
+
+        /* ===== TABLES ===== */
+        .table-wrapper {
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        thead {
+            background: #2c5f2d;
+            color: white;
+        }
+
+        th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 700;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 0.85rem 1rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        tbody tr {
+            transition: background 0.2s;
+        }
+
+        tbody tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        tbody tr:hover {
+            background: #f0f7f0;
+        }
+/* ===== ROUTE BADGES ===== */
+        .route-badge {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: white;
+            text-align: center;
+            min-width: 60px;
+        }
+
+        .route-badge.metro-1 { background: #e53935; }
+        .route-badge.metro-2 { background: #1e88e5; }
+        .route-badge.metro-3 { background: #43a047; }
+        .route-badge.bus { background: #fb8c00; }
+        .route-badge.tram { background: #8e24aa; }
+        .route-badge.train { background: #00897b; }
+
+        /* ===== PEAK HOURS ===== */
+        .peak-hours {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 0.5rem 1rem;
+            margin: 0.5rem 0;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        .peak-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+            animation: pulse 2s infinite;
+        }
+
+        .peak-indicator.morning { background: #ff9800; }
+        .peak-indicator.evening { background: #f44336; }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* ===== DIRECTION CARDS ===== */
+        .direction-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .direction-card {
+            background: #f9f9f9;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid #00897b;
+            transition: all 0.3s;
+        }
+
+        .direction-card:hover {
+            background: #f0f0f0;
+            transform: translateX(5px);
+        }
+
+        .direction-card h4 {
+            color: #00897b;
+            margin-bottom: 0.75rem;
+            font-size: 1.2rem;
+        }
+
+        .direction-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .direction-info div {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.3rem 0;
+        }
+
+        .direction-info strong {
+            color: #555;
+        }
+
+        /* ===== INFO BOX ===== */
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 1rem 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 4px;
+        }
+
+        .info-box strong {
+            color: #1565c0;
+        }
+
+        /* ===== FOOTER ===== */
+        footer {
+            background: #2c5f2d;
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            header h1 { font-size: 2rem; }
+            .motto { font-size: 1.2rem; }
+            nav ul { gap: 0.5rem 0.75rem; }
+            nav a { font-size: 0.85rem; padding: 0.35rem 0.6rem; }
+            
+            section { padding: 1.5rem; }
+            h2 { font-size: 1.5rem; }
+            h3 { font-size: 1.2rem; }
+            
+            th, td { padding: 0.6rem; font-size: 0.85rem; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🏙️ Ворочанск</h1>
+        <p class="motto">«Будучи Равшаном<br>Возможно всё!»</p>
+    </header>
+
+    <nav>
+        <div class="nav-container">
+            <div class="nav-group">
+                <div class="nav-group-label">Навигация по городу</div>
+
+            </div>
+            <div class="nav-group">
+                <div class="nav-group-label">Разделы проекта</div>
+<ul>
+                   <li><a href="/vorochansk">🏠 Главная</a></li>
+                    <li><a href="https://maxmine.bond" class="external highlight">🌐 Главный сайт MaxMine</a></li>
+                    <li><a href="/vorochansk/roads-buses">🚌 Автомобильные дороги и Автобусы</a></li>
+                    <li><a href="/vorochansk/air-sea">✈️ Воздушный и Морской Транспорт</a></li>
+                    <li><a href="/vorochansk/rules-tariffs">📋 Правила и Тарифы</a></li>
+                    <li><a href="/vorochansk/tourists">🎒 Для туристов</a></li>
+                    <li><a href="/vorochansk/stations-shedule">📃Расписание транспорта</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+
+        <!-- ==================== ПРИГОРОДНЫЕ ЭЛЕКТРИЧКИ ==================== -->
+        <section>
+            <h2>🚆 Расписание пригородных электричек</h2>
+
+            <div class="info-box">
+                <strong>ℹ️ Информация:</strong> Все электрички отправляются с Центрального вокзала Ворочанска. Время в пути указано до конечной станции.
+            </div>
+
+            <div class="direction-grid">
+                <!-- Северное направление -->
+                <div class="direction-card">
+                    <h4>🧭 Северное направление</h4>
+                    <div class="direction-info">
+                        <div><strong>Маршрут:</strong> <span class="route-badge train">Э-102</span></div>
+                        <div><strong>Конечная:</strong> Чёрная Смола</div>
+                        <div><strong>Время в пути:</strong> 45 мин</div>
+                        <div><strong>Интервал:</strong> 30-60 мин</div>
+                    </div>
+                                        <div class="direction-info">
+                        <div><strong>Маршрут:</strong> <span class="route-badge train">Э-104</span></div>
+                        <div><strong>Конечная:</strong> Новосёлково</div>
+                        <div><strong>Время в пути:</strong> 3 ч 25 мин</div>
+                        <div><strong>Интервал:</strong> 120-360 мин</div>
+                    </div>
+                </div>
+
+                <!-- Южное направление -->
+                <div class="direction-card">
+                    <h4>🧭 Южное направление</h4>
+                    <div class="direction-info">
+                        <div><strong>Маршрут:</strong> <span class="route-badge train">Э-202</span></div>
+                        <div><strong>Конечная:</strong> Ярославичи</div>
+                        <div><strong>Время в пути:</strong> 35 мин</div>
+                        <div><strong>Интервал:</strong> 40-60 мин</div>
+                    </div>
+                </div>
+
+                <!-- Восточное направление -->
+                <div class="direction-card">
+                    <h4>🧭 Восточное направление</h4>
+                    <div class="direction-info">
+                        <div><strong>Маршрут:</strong> <span class="route-badge train">Э-302</span></div>
+                        <div><strong>Конечная:</strong> Нововорочанск</div>
+                        <div><strong>Время в пути:</strong> 50 мин</div>
+                        <div><strong>Интервал:</strong> 60 мин</div>
+                    </div>
+                </div>
+
+                <!-- Западное направление -->
+                <div class="direction-card">
+                    <h4>🧭 Западное направление</h4>
+                    <div class="direction-info">
+                        <div><strong>Маршрут:</strong> <span class="route-badge train">Э-404</span></div>
+                        <div><strong>Конечная:</strong> Петербуржск</div>
+                        <div><strong>Время в пути:</strong> 1 ч 20 мин</div>
+                        <div><strong>Интервал:</strong> 20-50 мин</div>
+                    </div>
+                </div>
+            </div>
+<h3>📅 Детальное расписание</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Маршрут</th>
+                            <th>Направление</th>
+                            <th>Конечная станция</th>
+                            <th>Первый рейс</th>
+                            <th>Последний рейс</th>
+                            <th>Интервал</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="route-badge train">Э-102</span></td>
+                            <td>Северное</td>
+                            <td>Чёрная Смола</td>
+                            <td>05:30</td>
+                            <td>23:00</td>
+                            <td>30-60 мин</td>
+                        </tr>
+                                   <tr>
+                            <td><span class="route-badge train">Э-104</span></td>
+                            <td>Северное</td>
+                            <td>Чёрная Смола</td>
+                            <td>05:30</td>
+                            <td>23:00</td>
+                            <td>30-60 мин</td>
+                        </tr>
+                        <tr>
+                            <td><span class="route-badge train">Э-202</span></td>
+                            <td>Южное</td>
+                            <td>Ярославичи</td>
+                            <td>05:45</td>
+                            <td>22:30</td>
+                            <td>40-60 мин</td>
+                        </tr>
+                        <tr>
+                            <td><span class="route-badge train">Э-302</span></td>
+                            <td>Восточное</td>
+                            <td>Нововорочанск</td>
+                            <td>06:00</td>
+                            <td>22:00</td>
+                            <td>60 мин</td>
+                        </tr>
+                        <tr>
+                            <td><span class="route-badge train">Э-404</span></td>
+                            <td>Западное</td>
+                            <td>Петербуржск</td>
+                            <td>05:15</td>
+                            <td>00:30</td>
+                            <td>30-50 мин</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ==================== АВТОБУСЫ И ТРАМВАИ ==================== -->
+        <section>
+            <h2>🚌 Расписание автобусов и трамваев</h2>
+
+            <div class="info-box">
+                <strong>ℹ️ Информация:</strong> Интервалы движения указаны для будних дней. В выходные и праздничные дни интервалы могут быть увеличены.
+            </div>
+
+            <h3>🚌 Автобусные маршруты</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Маршрут</th>
+                            <th>Конечные остановки</th>
+                            <th>Первый рейс</th>
+                            <th>Последний рейс</th>
+                            <th>Интервал (будни)</th>
+                            <th>Интервал (выходные)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="route-badge bus">№1</span></td>
+                            <td>Центральный вокзал — Аэропорт</td>
+                            <td>05:00</td>
+                            <td>00:30</td>
+                            <td>10-15 мин</td>
+                            <td>15-20 мин</td>
+                        </tr>
+<tr>
+                            <td><span class="route-badge bus">№5</span></td>
+                            <td>Северный район — Южный парк</td>
+                            <td>05:30</td>
+                            <td>23:30</td>
+                            <td>12-18 мин</td>
+                            <td>20-25 мин</td>
+                        </tr>
+                        <tr>
+                            <td><span class="route-badge bus">№7</span></td>
+                            <td>Речной район — Промышленная зона</td>
+                            <td>06:00</td>
+                            <td>22:00</td>
+                            <td>15-20 мин</td>
+                            <td>25-30 мин</td>
+                        </tr>
+                        <tr>
+                            <td><span class="route-badge bus">№12</span></td>
+                            <td>Центральная площадь — Восточный жилой массив</td>
+                            <td>05:45</td>
+                            <td>23:00</td>
+                            <td>10-15 мин</td>
+                            <td>15-20 мин</td>
+                        </tr>
+                        <tr>
+                            <td><span class="route-badge bus">№15</span></td>
+                            <td>Западный район — Центральный рынок</td>
+                            <td>06:15</td>
+                            <td>22:30</td>
+                            <td>18-25 мин</td>
+                            <td>25-35 мин</td>
+                        </tr>
+                        <tr>
+                            <td><span class="route-badge bus">№20</span></td>
+                            <td>Университет — Спортивный комплекс</td>
+                            <td>07:00</td>
+                            <td>21:00</td>
+                            <td>20-30 мин</td>
+                            <td>30-40 мин</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>🚋 Трамвайные маршруты</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Маршрут</th>
+                            <th>Конечные остановки</th>
+                            <th>Первый рейс</th>
+                            <th>Последний рейс</th>
+                            <th>Интервал (будни)</th>
+                            <th>Интервал (выходные)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="route-badge tram">№3</span></td>
+                            <td>Центральная площадь — Речной район</td>
+                            <td>05:30</td>
+                            <td>23:30</td>
+                            <td>8-12 мин</td>
+                            <td>12-15 мин</td>
+                        </tr>
+                        <tr>
+                            <td><span class="route-badge tram">№5</span></td>
+                            <td>Северный вокзал — Южный парк</td>
+                            <td>05:45</td>
+                            <td>23:00</td>
+                            <td>10-15 мин</td>
+                            <td>15-20 мин</td>
+                        </tr>
+                        <tr>
+                            <td><span class="route-badge tram">№7</span></td>
+                            <td>Западный район — Восточный жилой массив</td>
+                            <td>06:00</td>
+                            <td>22:30</td>
+                            <td>12-18 мин</td>
+                            <td>18-25 мин</td>
+                        </tr>
+                        <tr>
+                            <td><span class="route-badge tram">№9</span></td>
+<td>Промышленная зона — Театральная площадь</td>
+                            <td>06:30</td>
+                            <td>22:00</td>
+                            <td>15-20 мин</td>
+                            <td>20-30 мин</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ==================== МЕТРОПОЛИТЕН ==================== -->
+        <section>
+            <h2>🚇 Расписание метрополитена</h2>
+
+            <div class="info-box">
+                <strong>ℹ️ Информация:</strong> Часы пик — периоды наибольшей загрузки метро. В это время интервалы движения сокращаются для обеспечения комфорта пассажиров.
+            </div>
+
+            <div class="peak-hours">
+                <span class="peak-indicator morning"></span>
+                <strong>Утренний час пик:</strong> 07:00 — 09:30 (будние дни)
+            </div>
+            <div class="peak-hours">
+                <span class="peak-indicator evening"></span>
+                <strong>Вечерний час пик:</strong> 17:00 — 19:30 (будние дни)
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Линия</th>
+                            <th>Название</th>
+                            <th>Конечные станции</th>
+                            <th>Первый поезд</th>
+                            <th>Последний поезд</th>
+                            <th>Интервал (час пик)</th>
+                            <th>Интервал (обычное время)</th>
+                            <th>Интервал (выходные)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="route-badge metro-1">Л1</span></td>
+                            <td>Красная</td>
+                            <td>Северная — Южная</td>
+                            <td>05:30</td>
+                            <td>01:00</td>
+                            <td>3-4 мин</td>
+                            <td>6-8 мин</td>
+                            <td>8-10 мин</td>
+                        </tr>
+                        <tr>
+                            <td><span class="route-badge metro-2">Л2</span></td>
+                            <td>Синяя</td>
+                            <td>Западная — Восточная</td>
+                            <td>05:45</td>
+                            <td>00:30</td>
+                            <td>4-5 мин</td>
+                            <td>7-9 мин</td>
+                            <td>9-12 мин</td>
+                        </tr>
+                        <tr>
+                            <td><span class="route-badge metro-3">Л3</span></td>
+                            <td>Зелёная</td>
+                            <td>Аэропорт — Центральный парк</td>
+                            <td>06:00</td>
+                            <td>23:30</td>
+                            <td>5-6 мин</td>
+                            <td>8-10 мин</td>
+                            <td>10-15 мин</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>📊 Статистика загруженности линий</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Линия</th>
+                            <th>Утренний пик</th>
+                            <th>Дневное время</th>
+                            <th>Вечерний пик</th>
+                            <th>Поздний вечер</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="route-badge metro-1">Л1</span> Красная</td>
+<td>🔴 Очень высокая</td>
+                            <td>🟡 Средняя</td>
+                            <td>🔴 Очень высокая</td>
+                            <td>🟢 Низкая</td>
+                        </tr>
+                        <tr>
+                            <td><span class="route-badge metro-2">Л2</span> Синяя</td>
+                            <td>🟠 Высокая</td>
+                            <td>🟢 Низкая</td>
+                            <td>🟠 Высокая</td>
+                            <td>🟢 Низкая</td>
+                        </tr>
+                        <tr>
+                            <td><span class="route-badge metro-3">Л3</span> Зелёная</td>
+                            <td>🟡 Средняя</td>
+                            <td>🟢 Низкая</td>
+                            <td>🟡 Средняя</td>
+                            <td>🟢 Низкая</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Ворочанск. Все права защищены.</p>
+        <p style="margin-top: 0.5rem; opacity: 0.8;">Официальный сайт города в Minecraft</p>
+    </footer>
+
+    <script>
+        // Плавная прокрутка для внутренних якорей
+        document.querySelectorAll('nav a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // Анимация появления секций
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+        document.querySelectorAll('section').forEach(section => {
+            section.style.opacity = '0';
+            section.style.transform = 'translateY(20px)';
+            section.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(section);
+        });
+    </script>
+</body>
+</html>
