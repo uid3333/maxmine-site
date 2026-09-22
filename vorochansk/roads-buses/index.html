@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Автомобильные дороги и Автобусы - Ворочанск</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+        }
+
+        header {
+            background: linear-gradient(135deg, #2c5f2d 0%, #97bc62 100%);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 3px 3px 0px rgba(0,0,0,0.3);
+            letter-spacing: 2px;
+        }
+
+        .motto {
+            font-size: 1.5rem;
+            font-style: italic;
+            margin-top: 1rem;
+            opacity: 0.95;
+        }
+
+        nav {
+            background: #2c5f2d;
+            padding: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .nav-container { max-width: 1200px; margin: 0 auto; }
+
+        .nav-group-label {
+            color: #97bc62;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        .nav-group {
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid rgba(151, 188, 98, 0.2);
+        }
+
+        .nav-group:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 0.75rem 1.5rem;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            display: inline-block;
+            font-size: 0.95rem;
+        }
+
+        nav a:hover { color: #97bc62; background: rgba(151, 188, 98, 0.15); }
+        nav a.external::after { content: ' ↗'; font-size: 0.75rem; opacity: 0.7; }
+        nav a.highlight { background: rgba(151, 188, 98, 0.25); border: 1px solid rgba(151, 188, 98, 0.4); }
+        nav a.active { background: #97bc62; color: #2c5f2d; }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+
+        section {
+            background: white;
+            margin: 2rem 0;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            color: #2c5f2d;
+            margin-bottom: 1.5rem;
+            font-size: 2rem;
+            border-bottom: 3px solid #97bc62;
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            color: #2c5f2d;
+            margin: 1.5rem 0 1rem 0;
+            font-size: 1.5rem;
+        }
+
+        /* ===== TABLES ===== */
+        .table-wrapper {
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        thead {
+            background: #2c5f2d;
+            color: white;
+        }
+
+        th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 700;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 0.85rem 1rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        tbody tr:nth-child(even) { background: #f9f9f9; }
+        tbody tr:hover { background: #f0f7f0; }
+
+        /* ===== ROUTE BADGES ===== */
+        .route-badge {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: white;
+            text-align: center;
+            min-width: 60px;
+        }
+
+        .route-badge.bus { background: #fb8c00; }
+        .route-badge.bus-express { background: #d84315; }
+        .route-badge.bus-night { background: #37474f; }
+        .route-badge.road { background: #546e7a; }
+
+        /* ===== STATUS CARDS ===== */
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.25rem;
+            margin: 1.5rem 0;
+        }
+
+        .status-card {
+            background: #f9f9f9;
+            padding: 1.25rem;
+            border-radius: 8px;
+            border-left: 4px solid;
+            transition: all 0.3s;
+        }
+
+        .status-card:hover {
+            background: #f0f0f0;
+            transform: translateY(-3px);
+        }
+
+        .status-card.ok { border-left-color: #4caf50; }
+        .status-card.warning { border-left-color: #ff9800; }
+        .status-card.danger { border-left-color: #f44336; }
+        .status-card.info { border-left-color: #2196f3; }
+
+        .status-card h4 {
+            color: #2c5f2d;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-card .status-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin: 0.5rem 0;
+        }
+
+        .status-card.ok .status-value { color: #4caf50; }
+        .status-card.warning .status-value { color: #ff9800; }
+        .status-card.danger .status-value { color: #f44336; }
+        .status-card.info .status-value { color: #2196f3; }
+
+        .status-card .status-desc {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        /* ===== LOAD INDICATOR ===== */
+        .load-bar {
+            width: 100%;
+            height: 10px;
+            background: #e0e0e0;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+
+        .load-bar-fill {
+            height: 100%;
+            border-radius: 5px;
+            transition: width 0.6s ease;
+        }
+
+        .load-low { background: #4caf50; }
+        .load-medium { background: #ff9800; }
+        .load-high { background: #f44336; }
+
+        /* ===== ROAD CARDS ===== */
+        .road-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .road-card {
+            background: #f9f9f9;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-top: 4px solid #546e7a;
+            transition: all 0.3s;
+        }
+
+        .road-card:hover {
+            background: #f0f0f0;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .road-card h4 {
+            color: #2c5f2d;
+            margin-bottom: 0.75rem;
+            font-size: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .road-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+        }
+
+        .road-info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.3rem 0;
+            border-bottom: 1px dashed #ddd;
+        }
+
+        .road-info-row:last-child { border-bottom: none; }
+
+        .road-info-row strong {
+            color: #555;
+        }
+
+        .road-info-row span {
+            color: #333;
+            font-weight: 600;
+        }
+
+        .road-status {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .road-status.free { background: #e8f5e9; color: #2e7d32; }
+        .road-status.moderate { background: #fff3e0; color: #e65100; }
+        .road-status.jammed { background: #ffebee; color: #c62828; }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .status-dot.green { background: #4caf50; animation: pulse 2s infinite; }
+        .status-dot.orange { background: #ff9800; animation: blink 1.5s infinite; }
+        .status-dot.red { background: #f44336; animation: blink 1s infinite; }
+
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+        /* ===== INFO BOX ===== */
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 1rem 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 4px;
+        }
+
+        .info-box strong { color: #1565c0; }
+
+        .warning-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 1rem 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 4px;
+        }
+
+        .warning-box strong { color: #856404; }
+
+        .update-time {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            padding: 0.75rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        /* ===== PRICE ===== */
+        .price {
+            font-weight: 700;
+            color: #2c5f2d;
+        }
+
+        /* ===== FOOTER ===== */
+        footer {
+            background: #2c5f2d;
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            header h1 { font-size: 2rem; }
+            .motto { font-size: 1.2rem; }
+            nav ul { gap: 0.5rem 0.75rem; }
+            nav a { font-size: 0.85rem; padding: 0.35rem 0.6rem; }
+            section { padding: 1.5rem; }
+            h2 { font-size: 1.5rem; }
+            h3 { font-size: 1.2rem; }
+            th, td { padding: 0.6rem; font-size: 0.85rem; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🏙️ Ворочанск</h1>
+        <p class="motto">«Делаем всё возможное для комфорта»</p>
+    </header>
+
+    <nav>
+        <div class="nav-container">
+            <div class="nav-group">
+                <div class="nav-group-label">Разделы проекта</div>
+                <ul>
+                    <li><a href="https://maxmine.bond" class="external">🌐 Главный сайт MaxMine</a></li>
+                    <li><a href="/vorochansk/roads-buses" class="highlight active">🚌 Автомобильные дороги и Автобусы</a></li>
+                    <li><a href="/vorochansk/air-sea">✈️ Воздушный и Морской Транспорт</a></li>
+                    <li><a href="/vorochansk/rules-tariffs">📋 Правила и Тарифы</a></li>
+                    <li><a href="/vorochansk/tourists">🎒 Для туристов</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+
+        <!-- ==================== СТАТУС АВТОВОКЗАЛА ==================== -->
+        <section>
+            <h2>🚏 Центральный автовокзал — оперативная информация</h2>
+
+            <div class="update-time">
+                ⏰ Обновлено: 23 сентября 2026, 10:15
+            </div>
+
+            <div class="warning-box">
+                <strong>⚠️ Внимание:</strong> В связи с ремонтными работами на выезде из города, отправление автобусов по южному направлению временно перенесено на платформу №7. Приносим извинения за неудобства.
+            </div>
+
+            <div class="status-grid">
+                <div class="status-card warning">
+                    <h4>📊 Общая загруженность</h4>
+                    <div class="status-value">Высокая</div>
+                    <div class="load-bar">
+                        <div class="load-bar-fill load-high" style="width: 78%;"></div>
+                    </div>
+                    <div class="status-desc">78% — рекомендуется прибыть заранее</div>
+                </div>
+
+                <div class="status-card ok">
+                    <h4>🎫 Кассы</h4>
+                    <div class="status-value">Открыты</div>
+                    <div class="status-desc">Все 6 касс работают, очередь ~10 мин</div>
+                </div>
+
+                <div class="status-card ok">
+                    <h4>🪑 Зал ожидания</h4>
+                    <div class="status-value">Доступен</div>
+                    <div class="status-desc">Свободных мест: 42 из 120</div>
+                </div>
+
+                <div class="status-card info">
+                    <h4>🧳 Камера хранения</h4>
+                    <div class="status-value">Работает</div>
+                    <div class="status-desc">Заполнена на 60%, приём вещей идёт</div>
+                </div>
+
+                <div class="status-card ok">
+                    <h4>🚏 Платформы</h4>
+                    <div class="status-value">10 / 12</div>
+                    <div class="status-desc">Платформы №3 и №8 — на ремонте</div>
+                </div>
+
+                <div class="status-card ok">
+                    <h4>☕ Кафе и магазины</h4>
+                    <div class="status-value">Все открыты</div>
+                    <div class="status-desc">4 кафе, 2 магазина, аптека</div>
+                </div>
+
+                <div class="status-card ok">
+                    <h4>🚻 Санитарные зоны</h4>
+                    <div class="status-value">Открыты</div>
+                    <div class="status-desc">Уборка по графику, всё чисто</div>
+                </div>
+
+                <div class="status-card warning">
+                    <h4>🅿️ Парковка</h4>
+                    <div class="status-value">Почти полная</div>
+                    <div class="load-bar">
+                        <div class="load-bar-fill load-high" style="width: 85%;"></div>
+                    </div>
+                    <div class="status-desc">Свободно 15 мест из 100</div>
+                </div>
+            </div>
+
+            <h3>📢 Последние объявления</h3>
+            <div class="info-box">
+                <strong>10:15</strong> — Автобус №205 до Кварцеграда задерживается на 15 минут по техническим причинам.<br>
+                <strong>09:45</strong> — Открыта продажа билетов на вечерние рейсы до Морского порта.<br>
+                <strong>09:00</strong> — Платформа №7 временно обслуживает южное направление.
+            </div>
+        </section>
+
+        <!-- ==================== МЕЖДУГОРОДНИЕ АВТОБУСЫ ==================== -->
+        <section>
+            <h2>🚌 Междугородние автобусные маршруты</h2>
+
+            <div class="info-box">
+                <strong>ℹ️ Информация:</strong> Все междугородние автобусы отправляются с Центрального автовокзала Ворочанска. Билеты можно приобрести в кассах, через терминалы самообслуживания или онлайн. Дети до 7 лет — бесплатно.
+            </div>
+
+            <h3>📅 Расписание и стоимость</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Маршрут</th>
+                            <th>Направление</th>
+                            <th>Конечная остановка</th>
+                            <th>Время в пути</th>
+                            <th>Отправления</th>
+                            <th>Стоимость</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="route-badge bus">№101</span></td>
+                            <td>Северное</td>
+                            <td>Лесной</td>
+                            <td>1 ч 20 мин</td>
+                            <td>06:30, 09:00, 12:30, 16:00, 19:30</td>
+                            <td class="price">45 руб.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="route-badge bus">№102</span></td>
+                            <td>Северное</td>
+                            <td>Сосновый Бор</td>
+                            <td>2 ч 10 мин</td>
+                            <td>07:15, 13:45</td>
+                            <td class="price">75 руб.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="route-badge bus">№201</span></td>
+                            <td>Южное</td>
+                            <td>Приозёрный</td>
+                            <td>1 ч 45 мин</td>
+                            <td>06:00, 08:30, 11:00, 14:30, 17:00, 20:00</td>
+                            <td class="price">55 руб.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="route-badge bus">№205</span></td>
+                            <td>Южное</td>
+                            <td>Кварцеград</td>
+                            <td>2 ч 30 мин</td>
+                            <td>07:00, 10:30, 15:00, 18:30</td>
+                            <td class="price">90 руб.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="route-badge bus">№303</span></td>
+                            <td>Восточное</td>
+                            <td>Горный</td>
+                            <td>2 ч 40 мин</td>
+                            <td>06:45, 10:15, 14:00, 18:00</td>
+                            <td class="price">95 руб.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="route-badge bus">№307</span></td>
+                            <td>Восточное</td>
+                            <td>Шахтёрск</td>
+                            <td>3 ч 20 мин</td>
+                            <td>08:00, 16:30</td>
+                            <td class="price">120 руб.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="route-badge bus">№404</span></td>
+                            <td>Западное</td>
+                            <td>Морской</td>
+                            <td>3 ч 00 мин</td>
+                            <td>06:15, 09:45, 13:15, 17:30, 21:00</td>
+                            <td class="price">110 руб.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="route-badge bus">№410</span></td>
+                            <td>Западное</td>
+                            <td>Портовый</td>
+                            <td>3 ч 40 мин</td>
+                            <td>07:30, 15:00</td>
+                            <td class="price">135 руб.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="route-badge bus-express">Э-1</span></td>
+                            <td>Экспресс</td>
+                            <td>Морской (без остановок)</td>
+                            <td>2 ч 15 мин</td>
+                            <td>08:00, 18:00</td>
+                            <td class="price">180 руб.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="route-badge bus-night">Н-1</span></td>
+                            <td>Ночной</td>
+                            <td>Приозёрный</td>
+                            <td>1 ч 50 мин</td>
+                            <td>01:30, 03:30</td>
+                            <td class="price">70 руб.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>💰 Тарифы и льготы</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Категория пассажиров</th>
+                            <th>Скидка</th>
+                            <th>Условия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Дети до 7 лет</td>
+                            <td class="price">100%</td>
+                            <td>Без предоставления места</td>
+                        </tr>
+                        <tr>
+                            <td>Дети 7–14 лет</td>
+                            <td class="price">50%</td>
+                            <td>При предъявлении документа</td>
+                        </tr>
+                        <tr>
+                            <td>Школьники</td>
+                            <td class="price">30%</td>
+                            <td>По ученическому билету</td>
+                        </tr>
+                        <tr>
+                            <td>Студенты</td>
+                            <td class="price">25%</td>
+                            <td>По студенческому билету</td>
+                        </tr>
+                        <tr>
+                            <td>Пенсионеры</td>
+                            <td class="price">40%</td>
+                            <td>По пенсионному удостоверению</td>
+                        </tr>
+                        <tr>
+                            <td>Багаж (более 20 кг)</td>
+                            <td class="price">+20 руб.</td>
+                            <td>За каждое место</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ==================== АВТОМОБИЛЬНЫЕ ДОРОГИ ==================== -->
+        <section>
+            <h2>🛣️ Автомобильные дороги по направлениям</h2>
+
+            <div class="info-box">
+                <strong>ℹ️ Информация:</strong> Все дороги начинаются от Центральной площади Ворочанска. Данные о загруженности обновляются каждые 15 минут.
+            </div>
+
+            <div class="road-grid">
+
+                <!-- Северное направление -->
+                <div class="road-card">
+                    <h4><span class="route-badge road">М-1</span> Северный тракт</h4>
+                    <div class="road-info">
+                        <div class="road-info-row">
+                            <strong>Направление:</strong>
+                            <span>🧭 Север</span>
+                        </div>
+                        <div class="road-info-row">
+                            <strong>Протяжённость:</strong>
+                            <span>84 блока</span>
+                        </div>
+                        <div class="road-info-row">
+                            <strong>Покрытие:</strong>
+                            <span>Каменные кирпичи</span>
+                        </div>
+                        <div class="road-info-row">
+                            <strong>Полос движения:</strong>
+                            <span>2 (в каждую сторону)</span>
+                        </div>
+                        <div class="road-info-row">
+                            <strong>Ограничение скорости:</strong>
+                            <span>80 км/ч</span>
+                        </div>
+                        <div class="road-info-row">
+                            <strong>Платные участки:</strong>
+                            <span>Нет</span>
+                        </div>
+                        <div class="road-info-row">
+                            <strong>Населённые пункты:</strong>
+                            <span>Лесной, Сосновый Бор</span>
+                        </div>
+                    </div>
+                    <div class="road-status free">
+                        <span class="status-dot green"></span>
+                        Свободно — средняя скорость 75 км/ч
+                    </div>
+                    <div class="load-bar">
+                        <div class="load-bar-fill load-low" style="width: 25%;"></div>
+                    </div>
+                </div>
+
+                <!-- Южное направление -->
+                <div class="road-card">
+                    <h4><span class="route-badge road">М-2</span> Южное шоссе</h4>
+                    <div class="road-info">
+                        <div class="road-info-row">
+                            <strong>Направление:</strong>
+                            <span>🧭 Юг</span>
+                        </div>
+                        <div class="road-info-row">
+                            <strong>Протяжённость:</strong>
+                            <span>120 блоков</span>
+                        </div>
+                        <div class="road-info-row">
+                            <strong>Покрытие:</strong>
+                            <span>Асфальт (чёрный бетон)</span>
+                        </div>
+                        <div class="road-info-row">
+                            <strong>Полос движения:</strong>
+                            <span>2 (в каждую сторону)</span>
+                        </div>
+                        <div class="road-info-row">
+                            <strong>Ограничение скорости:</strong>
+                            <span>90 км/ч</span>
+                        </div>
+                        <div class="road-info-row">
+                            <strong>Платные участки:</strong>
+                            <span>Нет</span>
+                        </div>
+                        <div class="road-info-row">
+                            <strong>Населённые пункты:</strong>
+                            <span>Приозёрный, Кварцеград</span>
+                        </div>
+                    </div>
+                    <div class="road-status moderate">
+                        <span class="status-dot orange"></span>
+                        Умеренная загрузка — средняя скорость 55 км/ч
+                    </div>
+                    <div class="load-bar">
+                        <div class="load-bar-fill load-medium" style="width: 60%;"></div>
+                    </div>
+                </div>
+
+                <!-- Восточное направление -->
+                <div class="road-card">
+                    <h4><span class="route-badge road">М-3</span> Восточная магистраль</h4>
+                    <div class="road-info">
+                        <div class="road-info-row">
+                            <strong>Направление:</strong>
+                            <span>🧭 Восток</span>
+                        </div>
+                        <div class="road-info-row">
+                            <strong>Протяжённость:</strong>
+                            <span>156 блоков</span>
+                        </div>
+                        <div class="road-info-row">
+                            <strong>Покрытие:</strong>
+                            <span>Асфальт (чёрный бетон)</span>
+                        </div>
+                        <div class="road-info-row">
+                            <strong>Полос движения:</strong>
+                            <span>2 (в каждую сторону)</span>
+                        </div>
+                        <div class="road-info-row">
+                            <strong>Ограничение скорости:</strong>
+                            <span>70 км/ч</span>
+                        </div>
+                        <div class="road-info-row">
+                            <strong>Платные участки:</strong>
+                            <span>Горный перевал — 10 руб.</span>
+                        </div>
+                        <div class="road-info-row">
+                            <strong>Населённые пункты:</strong>
+                            <span>Горный, Шахтёрск</span>
+                        </div>
+                    </div>
+                    <div class="road-status jammed">
+                        <span class="status-dot red"></span>
+                        Пробка у Горного перевала — скорость 20 км/ч
+                    </div>
+                    <div class="load-bar">
+                        <div class="load-bar-fill load-high" style="width: 88%;"></div>
+                    </div>
+                </div>
+
+                <!-- Западное направление -->
+                <div class="road-card">
+                    <h4><span class="route-badge road">М-4</span> Западный проспект</h4>
+                    <div class="road-info">
+                        <div class="road-info-row">
+                            <strong>Направление:</strong>
+                            <span>🧭 Запад</span>
+                        </div>
+                        <div class="road-info-row">
+                            <strong>Протяжённость:</strong>
+                            <span>142 блока</span>
+                        </div>
+                        <div class="road-info-row">
+                            <strong>Покрытие:</strong>
+                            <span>Асфальт (чёрный бетон)</span>
+                        </div>
+                        <div class="road-info-row">
+                            <strong>Полос движения:</strong>
+                            <span>3 (в каждую сторону)</span>
+                        </div>
+                        <div class="road-info-row">
+                            <strong>Ограничение скорости:</strong>
+                            <span>100 км/ч</span>
+                        </div>
+                        <div class="road-info-row">
+                            <strong>Платные участки:</strong>
+                            <span>Нет</span>
+                        </div>
+                        <div class="road-info-row">
+                            <strong>Населённые пункты:</strong>
+                            <span>Морской, Портовый</span>
+                        </div>
+                    </div>
+                    <div class="road-status moderate">
+                        <span class="status-dot orange"></span>
+                        Умеренная загрузка — средняя скорость 65 км/ч
+                    </div>
+                    <div class="load-bar">
+                        <div class="load-bar-fill load-medium" style="width: 55%;"></div>
+                    </div>
+                </div>
+
+                <!-- Кольцевая дорога -->
+                <div class="road-card">
+                    <h4><span class="route-badge road">КАД</span> Кольцевая автодорога</h4>
+                    <div class="road-info">
+                        <div class="road-info-row">
+                            <strong>Тип:</strong>
+                            <span>🔄 Кольцевая</span>
+                        </div>
+                        <div class="road-info-row">
+                            <strong>Протяжённость:</strong>
+                            <span>320 блоков</span>
+                        </div>
+                        <div class="road-info-row">
+                            <strong>Покрытие:</strong>
+                            <span>Асфальт (чёрный бетон)</span>
+                        </div>
+                        <div class="road-info-row">
+                            <strong>Полос движения:</strong>
+                            <span>4 (в каждую сторону)</span>
+                        </div>
+                        <div class="road-info-row">
+                            <strong>Ограничение скорости:</strong>
+                            <span>110 км/ч</span>
+                        </div>
+                        <div class="road-info-row">
+                            <strong>Платные участки:</strong>
+                            <span>Нет</span>
+                        </div>
+                        <div class="road-info-row">
+                            <strong>Развязок:</strong>
+                            <span>8</span>
+                        </div>
+                    </div>
+                    <div class="road-status moderate">
+                        <span class="status-dot orange"></span>
+                        Загружена в часы пик — средняя скорость 70 км/ч
+                    </div>
+                    <div class="load-bar">
+                        <div class="load-bar-fill load-medium" style="width: 65%;"></div>
+                    </div>
+                </div>
+
+                <!-- Объездная -->
+                <div class="road-card">
+                    <h4><span class="route-badge road">А-10</span> Объездная дорога</h4>
+                    <div class="road-info">
+                        <div class="road-info-row">
+                            <strong>Тип:</strong>
+                            <span>🔁 Объездная</span>
+                        </div>
+                        <div class="road-info-row">
+                            <strong>Протяжённость:</strong>
+                            <span>410 блоков</span>
+                        </div>
+                        <div class="road-info-row">
+                            <strong>Покрытие:</strong>
+                            <span>Каменные кирпичи</span>
+                        </div>
+                        <div class="road-info-row">
+                            <strong>Полос движения:</strong>
+                            <span>2 (в каждую сторону)</span>
+                        </div>
+                        <div class="road-info-row">
+                            <strong>Ограничение скорости:</strong>
+                            <span>90 км/ч</span>
+                        </div>
+                        <div class="road-info-row">
+                            <strong>Платные участки:</strong>
+                            <span>Нет</span>
+                        </div>
+                        <div class="road-info-row">
+                            <strong>Особенности:</strong>
+                            <span>Обходит город по внешнему кольцу</span>
+                        </div>
+                    </div>
+                    <div class="road-status free">
+                        <span class="status-dot green"></span>
+                        Свободно — средняя скорость 85 км/ч
+                    </div>
+                    <div class="load-bar">
+                        <div class="load-bar-fill load-low" style="width: 20%;"></div>
+                    </div>
+                </div>
+
+            </div>
+
+            <h3>📊 Сводная таблица загруженности</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Дорога</th>
+                            <th>Направление</th>
+                            <th>Статус</th>
+                            <th>Средняя скорость</th>
+                            <th>Загруженность</th>
+                            <th>Примечания</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="route-badge road">М-1</span></td>
+                            <td>Северное</td>
+                            <td><span class="status-dot green"></span> Свободно</td>
+                            <td>75 км/ч</td>
+                            <td>25%</td>
+                            <td>Без ограничений</td>
+                        </tr>
+                        <tr>
+                            <td><span class="route-badge road">М-2</span></td>
+                            <td>Южное</td>
+                            <td><span class="status-dot orange"></span> Умеренно</td>
+                            <td>55 км/ч</td>
+                            <td>60%</td>
+                            <td>Ремонт у Кварцеграда</td>
+                        </tr>
+                        <tr>
+                            <td><span class="route-badge road">М-3</span></td>
+                            <td>Восточное</td>
+                            <td><span class="status-dot red"></span> Пробка</td>
+                            <td>20 км/ч</td>
+                            <td>88%</td>
+                            <td>Затор на перевале</td>
+                        </tr>
+                        <tr>
+                            <td><span class="route-badge road">М-4</span></td>
+                            <td>Западное</td>
+                            <td><span class="status-dot orange"></span> Умеренно</td>
+                            <td>65 км/ч</td>
+                            <td>55%</td>
+                            <td>Без ограничений</td>
+                        </tr>
+                        <tr>
+                            <td><span class="route-badge road">КАД</span></td>
+                            <td>Кольцевая</td>
+                            <td><span class="status-dot orange"></span> Умеренно</td>
+                            <td>70 км/ч</td>
+                            <td>65%</td>
+                            <td>Пик — после 18:00</td>
+                        </tr>
+                        <tr>
+                            <td><span class="route-badge road">А-10</span></td>
+                            <td>Объездная</td>
+                            <td><span class="status-dot green"></span> Свободно</td>
+                            <td>85 км/ч</td>
+                            <td>20%</td>
+                            <td>Рекомендуется для объезда</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="warning-box">
+                <strong>⚠️ Важная информация:</strong> На восточном направлении (М-3) в районе Горного перевала ведутся ремонтные работы. Рекомендуется использовать объезд через дорогу А-10. Ориентировочное время завершения работ — 30 сентября 2026.
+            </div>
+        </section>
+
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Ворочанск. Все права защищены.</p>
+        <p style="margin-top: 0.5rem; opacity: 0.8;">Официальный сайт города в Minecraft</p>
+    </footer>
+
+    <script>
+        // Плавная прокрутка для внутренних якорей
+        document.querySelectorAll('nav a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // Анимация появления секций
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+        document.querySelectorAll('section').forEach(section => {
+            section.style.opacity = '0';
+            section.style.transform = 'translateY(20px)';
+            section.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(section);
+        });
+    </script>
+</body>
+</html>
